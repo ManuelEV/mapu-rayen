@@ -4,6 +4,9 @@
 `$ composer install`     
 `$php artisan key:generate`     
 `$php artisan migrate`
+`$php artisan db:seed --class=ItemsTableSeeder`     
+`$php artisan db:seed --class=SalesTableSeeder`     
+`$php artisan db:seed --class=ItemSalesTableSeeder`     
     
 ### Iniciar el server en http://localhost:8000
     
