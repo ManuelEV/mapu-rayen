@@ -64,6 +64,7 @@
           <div slot="header">
             <strong>Lista de productos</strong>
           </div>
+          <!--
           <b-form>
 
             <table class="table table-hover">
@@ -84,6 +85,42 @@
             </table>
 
           </b-form>
+          -->
+
+          <b-row>
+            <b-col md="6" class="my-1">
+              <b-form-group label-cols-sm="3" label="Filtro" class="mb-0">
+                <b-input-group>
+                  <b-form-input v-model="filter" placeholder="Escriba para filtrar"></b-form-input>
+                  <b-input-group-append>
+                    <b-button :disabled="!filter" @click="filter = ''">Clear</b-button>
+                  </b-input-group-append>
+                </b-input-group>
+              </b-form-group>
+            </b-col>
+          </b-row>
+          <b-col md="12" class="my-1">
+
+            <b-table striped hover small :items="itemList" :fields="fields"
+                     :filter="filter" :current-page="currentPage" :per-page="perPage" stacked="md">
+
+              <template slot="agregar" slot-scope="row">
+                <!-- `data.value` is the value after formatted by the Formatter -->
+                <a href="#" @click.prevent="list(row.item)"><i class="fa fa-plus-circle fa-lg"></i></a>
+              </template>
+
+            </b-table>
+          </b-col>
+          <b-row>
+            <b-col md="6" class="my-1">
+              <b-pagination
+                v-model="currentPage"
+                :total-rows="totalRows"
+                :per-page="perPage"
+                class="my-0"
+              ></b-pagination>
+            </b-col>
+          </b-row>
         </b-card>
       </b-col>
 
@@ -110,7 +147,22 @@
         itemList: [],
         selectedItems: [],
         valorRealVenta: 0,
-        discount: 0
+        discount: 0,
+
+        filter: null,
+        totalRows: 1,
+        currentPage: 1,
+        perPage: 5,
+        pageOptions: [5, 10, 15],
+        fields: [
+          {key: 'id', label: 'ID', sortable: true},
+          {key: 'name', label: 'Nombre del producto', sortable: true},
+          {key: 'value', label: 'Precio', sortable: true},
+          //{key: 'stock', label: 'Stock en el inventario', sortable: true},
+          //{key: 'editar', label: 'Opciones'},
+         // {key: 'eliminar', label: ' '},
+          {key: 'agregar', label: ' '}
+        ]
       }
     },
     methods: {
@@ -129,12 +181,17 @@
         }else{
           me.discount = 0;
         }
+        var ids = [];
+        for (var i=0; i<me.selectedItems.length; i++){
+          ids.push(me.selectedItems[i].id);
+        }
+
 
         axios.post(ruta + '/sale', {
           'total': me.valorRealVenta,
           'subtotal': me.valorActualVenta,
           'discount': me.discount,
-          'selectedItems': me.selectedItems,
+          'ids': ids,
         }).then(function (response) {
           if (response.data.status == "OK") {
             console.log('Ingreso exitoso')
@@ -159,6 +216,7 @@
           .then(function (r) {
             const response = r.data;
             me.itemList = response.items;
+            me.totalRows = me.itemList.length;
           })
           .catch(function (error) {
             console.log(error);
@@ -170,7 +228,7 @@
       },
       updateSelectedItems(producto){
         let me = this;
-        const value = parseInt(producto.value);
+        const value = producto.value;
         const current = parseInt(me.valorActualVenta);
         me.valorActualVenta = current+value;
         me.selectedItems.push(producto);
@@ -179,7 +237,6 @@
         let me = this;
         me.valorActualVenta = 0;
         me.selectedItems=[];
-
       },
       deleteFromList(producto){
         let me = this;

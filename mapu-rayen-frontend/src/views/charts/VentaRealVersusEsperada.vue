@@ -35,7 +35,7 @@
               const test = element[0].total+'';
               var transformed = 0;
               if (test !== 'null'){
-                transformed = parseInt(test,0);
+                transformed = parseFloat(test).toFixed(2);
               }
               me.conDescuento.push(transformed);
 
@@ -45,7 +45,7 @@
               const test = element[0].subtotal+'';
               var transformed = 0;
               if (test !== 'null'){
-                transformed = parseInt(test,0);
+                transformed = parseFloat(test).toFixed(2);
               }
               me.sinDescuento.push(transformed);
 
@@ -61,13 +61,13 @@
             labels: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Deciembre'],
             datasets: [
               {
-                label: 'Valor real',
+                label: 'Promedio ventas',
                 backgroundColor: hexToRgba('#e4d000', 90),
                 data: me.conDescuento//[30, 39, 10, 50, 30, 70, 35]
               },
               {
-                label: 'Valor esperado',
-                backgroundColor: hexToRgba('#ff00dd', 90),
+                label: 'Total ventas',
+                backgroundColor: hexToRgba('#91ff00', 90),
                 data: me.sinDescuento//[39, 80, 40, 35, 40, 20, 45]
               }
             ]

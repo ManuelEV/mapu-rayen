@@ -65,12 +65,12 @@
               {
                 label: 'Con descuento',
                 backgroundColor: hexToRgba('#E46651', 90),
-                data: me.conDescuento//[30, 39, 10, 50, 30, 70, 35]
+                data: me.sinDescuento//[30, 39, 10, 50, 30, 70, 35]
               },
               {
                 label: 'Sin descuento',
                 backgroundColor: hexToRgba('#00D8FF', 90),
-                data: me.sinDescuento//[39, 80, 40, 35, 40, 20, 45]
+                data: me.conDescuento//[39, 80, 40, 35, 40, 20, 45]
               }
             ]
           },

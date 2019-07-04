@@ -42,4 +42,5 @@ Route::get('/api/reportByMonth', 'ReportController@reportByMonth')->name('report
 Route::get('/api/discountByMonth', 'ReportController@discountByMonth')->name('reports.discountByMonth');
 Route::get('/api/productByYear', 'ReportController@productByYear')->name('reports.productByYear');
 Route::get('/api/salesVersus', 'ReportController@salesVersus')->name('reports.salesVersus');
+Route::get('/api/productReport', 'ReportController@productReport')->name('reports.productReport');
 

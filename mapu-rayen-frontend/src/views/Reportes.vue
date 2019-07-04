@@ -6,17 +6,26 @@
       <h4><i class="fa fa-filter fa-lg mt-4"></i>Filtros</h4>
 
       <div class="animated fadeIn">
-        <b-row>
-          <b-col cols="12" sm="6" lg="4">
-          </b-col>
-          <b-col cols="12" sm="6" lg="4">
-            <p >Fecha de inicio     -     Fecha de término</p>
-            <input type="date" v-model="fromMonth" @input="onChange">
-            <input type="date" v-model="toMonth" @input="onChange">
-          </b-col>
-          <b-col cols="12" sm="6" lg="4">
-          </b-col>
-        </b-row>
+        <b-container>
+          <b-row>
+            <b-col lg="2">
+            </b-col>
+            <b-col lg="4">
+              <b-input-group prepend="Fecha de inicio">
+
+                <b-form-input type="date" v-model="fromMonth" @input="onChange"></b-form-input>
+              </b-input-group>
+            </b-col>
+
+            <b-col lg="4">
+              <b-input-group prepend="Fecha de término">
+                <b-form-input type="date" v-model="toMonth" @input="onChange"></b-form-input>
+              </b-input-group>
+            </b-col>
+            <b-col lg="2">
+            </b-col>
+          </b-row>
+        </b-container>
       </div>
 
     </b-card>
@@ -92,9 +101,54 @@
             </b-card-body>
           </b-card>
         </b-col>
+
+
       </b-row>
 
 
+    </div>
+
+    <div class="animated fadeIn">
+      <b-row>
+        <b-col cols="12" sm="6" lg="12">
+          <b-card class="bg-secondary" no-body>
+            <div slot="header">
+              Resumen de productos vendidos <i class="fa fa-pie-chart"></i>
+              <div class="card-header-actions">
+                <b-link class="card-header-action btn-minimize" v-b-toggle.collapse1>
+                  <i class="icon-arrow-up"></i>
+                </b-link>
+              </div>
+            </div>
+            <b-collapse id="collapse1" visible>
+              <b-card-body>
+                <b-row>
+                  <b-col sm="6" md="2" v-for="(name, index) in product_name">
+                    <b-card class="text-white bg-info" v-if="product_occurrence[index]<max_sold/2">
+                      <div class="h4 mb-0">{{ product_occurrence[index] }}</div>
+                      <small class="text-muted text-uppercase font-weight-bold">{{ name }}</small>
+                      <b-progress height={} :max="max_sold" class="progress-white progress-xs mt-3"
+                                  :value="product_occurrence[index]"/>
+                    </b-card>
+                    <b-card class="text-white bg-danger" v-else-if="product_occurrence[index]===max_sold">
+                      <div class="h4 mb-0">{{ product_occurrence[index] }}</div>
+                      <small class="text-muted text-uppercase font-weight-bold">{{ name }}</small>
+                      <b-progress height={} :max="max_sold" class="progress-white progress-xs mt-3"
+                                  :value="product_occurrence[index]"/>
+                    </b-card>
+                    <b-card class="text-white bg-primary" v-else>
+                      <div class="h4 mb-0">{{ product_occurrence[index] }}</div>
+                      <small class="text-muted text-uppercase font-weight-bold">{{ name }}</small>
+                      <b-progress height={} :max="max_sold" class="progress-white progress-xs mt-3"
+                                  :value="product_occurrence[index]"/>
+                    </b-card>
+                  </b-col>
+                </b-row>
+              </b-card-body>
+            </b-collapse>
+          </b-card>
+        </b-col>
+      </b-row>
     </div>
 
     <h1>Gráficos año 2019</h1>
@@ -110,21 +164,13 @@
           <ventas-descuentos chartId="chart-line-01"/>
         </div>
       </b-card>
-      <b-card header="Valor venta real vs esperada">
+      <b-card header="Total de ventas versus promedio">
         <div class="chart-wrapper">
           <real-versus-esperada></real-versus-esperada>
         </div>
       </b-card>
-      <!--
-      <b-card header="Productos vendidos">
-        <div class="chart-wrapper">
-          <productos-vendidos chartId="chart-doughnut-01"/>
-        </div>
-      </b-card>
-      -->
+
     </b-card-group>
-
-
 
   </div>
 
@@ -161,11 +207,14 @@
           {text: 'Últimos 2 años', value: '3'}
         ],
         reportSummary: [],
-        toMonth: new Date(),
-        fromMonth: new Date(),
+        toMonth: new Date() + '',
+        fromMonth: new Date() + '',
         toDay: '',
         fromDay: '',
-        discount: []
+        discount: [],
+        product_name: [],
+        product_occurrence: [],
+        max_sold: 0
       }
     },
     methods: {
@@ -186,6 +235,31 @@
             console.log(me.reportSummary);
             console.log(response.report);
             console.log(me.reportSummary[0].subtotal);
+
+          })
+          .catch(function (error) {
+            console.log(error);
+          });
+
+        const ItemsUrl = ruta + '/productReport?from=' + me.fromMonth + '&to=' + me.toMonth;
+
+        axios.get(ItemsUrl)
+          .then(function (r) {
+            const response = r.data;
+            me.product_name = [];
+            me.product_occurrence = [];
+            const products = response.items;
+            console.log(Object.values(products));
+            for (const element in products) {
+              const split = element.split('-');
+              //console.log(split);
+              //const transformedOcurrence = Number(split[0]);
+              //me.product_occurrence.push(transformedOcurrence);
+              me.product_name.push(split[1]);
+            }
+            me.product_occurrence = Object.values(products);
+            me.max_sold = Math.max.apply(null, me.product_occurrence);
+
 
           })
           .catch(function (error) {

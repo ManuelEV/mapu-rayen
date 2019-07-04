@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Item;
+use App\ItemSale;
 use App\Sale;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -27,14 +29,26 @@ class SaleController extends Controller
         $sale->total = $request->total;
         $sale->discount = $request->discount;
 
-        $product_list = $request->selectedItems;
-        $sale->product_list = $product_list;
-
         $now = Carbon::now();
         $now->toTimeString();
 
         $sale->sale_date = $now;
         $sale->save();
+
+        //$id_list = array();
+        $id_list = $request->ids;
+        foreach ($id_list as $id){
+            $item_sale = new ItemSale();
+            $item_sale->sale_id = $sale->id;
+            $item_sale->item_id = $id;
+            $item_sale->sale_date = $now;
+            $item_sale->save();
+
+            //Update stock
+            $item = Item::findOrFail($id);
+            $item->stock = $item->stock-1;
+            $item->save();
+        }
 
         return ['status' => 'OK'];
     }

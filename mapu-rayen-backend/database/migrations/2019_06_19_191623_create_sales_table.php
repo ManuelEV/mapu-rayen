@@ -19,7 +19,6 @@ class CreateSalesTable extends Migration
             $table->integer('total');
             $table->boolean('discount');
             $table->dateTime('sale_date');
-            $table->json('product_list')->nullable();
             $table->timestamps();
         });
     }

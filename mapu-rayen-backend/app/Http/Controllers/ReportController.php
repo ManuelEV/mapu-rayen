@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Item;
+use App\ItemSale;
 use App\Sale;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -90,28 +91,26 @@ class ReportController extends Controller
         ];
     }
 
-    public function productByYear(){
-        $items_id = Item::selectRaw('max(id) as max')
+    public function productReport(Request $request){
+
+        $from = $request->from;
+        $to = $request->to;
+
+        $items_id = ItemSale::select('item_sales.item_id')
+            ->whereBetween('sale_date', [$from, $to])
             ->get();
 
-        $max_id = $items_id[0]->max;
-        //$id_list = range(1,$max_id);
+        $items = array();
 
-        $productos = Sale::select('sales.product_list')
-            ->whereYear('sale_date', '=', '2019')
-            ->get();
-
-        $transformed = array();
-
-        foreach ($productos as $producto){
-
-            array_push($transformed, $producto->id);
+        foreach ($items_id as $id) {
+            $item = Item::findOrFail($id);
+            array_push($items, $item[0]->id .'-' .$item[0]->name);
         }
 
+        $ocurrencias = array_count_values($items);
 
         return[
-            'lista' => $productos[0]->contains(Item::find(1)),
-            'ids' => $max_id
+            'items' => $ocurrencias
         ];
     }
 
@@ -121,8 +120,8 @@ class ReportController extends Controller
         $ventas = array();
 
         foreach ($meses as $mes) {
-            $venta = Sale::selectRaw('sum(total) as total')
-                ->selectRaw('sum(subtotal) as subtotal')
+            $venta = Sale::selectRaw('avg(total) as total')
+                ->selectRaw('sum(total) as subtotal')
                 ->whereMonth('sale_date', '=', $mes)
                 ->whereYear('sale_date', '=', '2019')
                 ->get();

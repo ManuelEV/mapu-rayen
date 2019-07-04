@@ -17,11 +17,11 @@
     <b-col md="9" class="my-1">
 
       <b-table striped hover small :items="itemsArray" :fields="fields"
-               :filter="filter">
+               :filter="filter" :current-page="currentPage" :per-page="perPage" stacked="md">
 
         <template slot="agregar" slot-scope="data">
           <!-- `data.value` is the value after formatted by the Formatter -->
-          <a :href="`#`">Agregar</a>
+          <a :href="`#`"><i class="fa fa-minus-circle fa-lg"></i><i class="fa fa-plus-circle fa-lg"></i></a>
         </template>
         <template slot="editar" slot-scope="data">
           <!-- `data.value` is the value after formatted by the Formatter -->
@@ -87,7 +87,7 @@
             const response = r.data;
 
             me.itemsArray = response.items;
-
+            me.totalRows = me.itemsArray.length;
           })
           .catch(function (error) {
             console.log(error);
