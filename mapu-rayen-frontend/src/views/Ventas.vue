@@ -104,13 +104,14 @@
             <b-table striped hover small :items="itemList" :fields="fields"
                      :filter="filter" :current-page="currentPage" :per-page="perPage" stacked="md">
 
-              <template slot="agregar" slot-scope="row">
+              <template v-slot:cell(agregar)="row" v-slot-scope="row">
                 <!-- `data.value` is the value after formatted by the Formatter -->
                 <a href="#" @click.prevent="list(row.item)"><i class="fa fa-plus-circle fa-lg"></i></a>
               </template>
 
             </b-table>
           </b-col>
+          
           <b-row>
             <b-col md="6" class="my-1">
               <b-pagination

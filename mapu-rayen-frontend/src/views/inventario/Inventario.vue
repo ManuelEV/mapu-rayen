@@ -19,15 +19,15 @@
       <b-table striped hover small :items="itemsArray" :fields="fields"
                :filter="filter" :current-page="currentPage" :per-page="perPage" stacked="md">
 
-        <template slot="agregar" slot-scope="data">
+        <template v-slot:cell(agregar)="data" v-slot-scope="data">
           <!-- `data.value` is the value after formatted by the Formatter -->
           <a :href="`#`"><i class="fa fa-minus-circle fa-lg"></i><i class="fa fa-plus-circle fa-lg"></i></a>
         </template>
-        <template slot="editar" slot-scope="data">
+        <template v-slot:cell(editar)="data" v-slot-scope="data">
           <!-- `data.value` is the value after formatted by the Formatter -->
           <a :href="`#`">Editar</a>
         </template>
-        <template slot="eliminar" slot-scope="data">
+        <template v-slot:cell(eliminar)="data" v-slot-scope="data">
           <!-- `data.value` is the value after formatted by the Formatter -->
           <a :href="`#`">Eliminar</a>
         </template>
